@@ -11,7 +11,7 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Analizador Sintáctico de Gramáticas - UPTC")
-        self.geometry("1100x700")
+        self.geometry("1000x550")
         self.grammar = None
         self.configure(bg="#f0f0f0")
         self._build_ui()
@@ -22,22 +22,25 @@ class App(tk.Tk):
         main_frame = ttk.Frame(self, padding="10")
         main_frame.pack(fill="both", expand=True)
 
-        # Crear notebook para organizar funcionalidades
+        # Crear notebook para organizar funcionalidades con altura fija
         notebook = ttk.Notebook(main_frame)
         notebook.pack(fill="both", expand=True)
 
         # TAB 1: Definir/Cargar Gramática
-        tab_grammar = ttk.Frame(notebook, padding="10")
+        tab_grammar = ttk.Frame(notebook, padding="10", height=400, width=800)
+        tab_grammar.pack_propagate(False)
         notebook.add(tab_grammar, text="📝 Gramática")
         self._build_grammar_tab(tab_grammar)
 
         # TAB 2: Parser (Análisis)
-        tab_parser = ttk.Frame(notebook, padding="10")
+        tab_parser = ttk.Frame(notebook, padding="10", height=400, width=800)
+        tab_parser.pack_propagate(False)
         notebook.add(tab_parser, text="🔍 Parser")
         self._build_parser_tab(tab_parser)
 
         # TAB 3: Generador de Cadenas
-        tab_generator = ttk.Frame(notebook, padding="10")
+        tab_generator = ttk.Frame(notebook, padding="10", height=400, width=800)
+        tab_generator.pack_propagate(False)
         notebook.add(tab_generator, text="⚡ Generador")
         self._build_generator_tab(tab_generator)
 
@@ -48,7 +51,9 @@ class App(tk.Tk):
             bd=1, 
             relief=tk.SUNKEN, 
             anchor=tk.W,
-            bg="#e0e0e0"
+            bg="#e0e0e0",
+            fg="#000000",
+            font=("Arial", 9)
         )
         self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
@@ -83,13 +88,17 @@ class App(tk.Tk):
         ).pack(side="left", padx=5)
 
         # Frame central: mostrar gramática
-        ttk.Label(parent, text="Gramática Actual:", font=("Arial", 11, "bold")).pack(anchor="w")
+        label = tk.Label(parent, text="Gramática Actual:", font=("Arial", 11, "bold"), 
+                        bg="#f0f0f0", fg="#333333")
+        label.pack(anchor="w")
         
         self.grammar_display = scrolledtext.ScrolledText(
             parent, 
             height=25, 
             font=("Courier", 10),
             bg="#ffffff",
+            fg="#000000",
+            insertbackground="#0066cc",
             wrap=tk.WORD
         )
         self.grammar_display.pack(fill="both", expand=True, pady=5)
@@ -132,7 +141,9 @@ class App(tk.Tk):
             result_frame, 
             height=20, 
             font=("Courier", 10),
-            bg="#f9f9f9"
+            bg="#ffffff",
+            fg="#000000",
+            insertbackground="#0066cc"
         )
         self.result_text.pack(fill="both", expand=True)
 
@@ -173,7 +184,9 @@ class App(tk.Tk):
             result_frame, 
             height=20, 
             font=("Courier", 10),
-            bg="#f9f9f9"
+            bg="#ffffff",
+            fg="#000000",
+            insertbackground="#0066cc"
         )
         self.gen_text.pack(fill="both", expand=True)
 
@@ -231,6 +244,7 @@ class App(tk.Tk):
         dialog.geometry("500x450")
         dialog.transient(self)
         dialog.grab_set()
+        dialog.configure(bg="#f0f0f0")
 
         # Tipo
         ttk.Label(dialog, text="Tipo de Gramática:").grid(row=0, column=0, sticky="w", padx=10, pady=5)
@@ -258,7 +272,7 @@ class App(tk.Tk):
 
         # Producciones
         ttk.Label(dialog, text="Producciones (una por línea, formato: A->aB):").grid(row=4, column=0, sticky="nw", padx=10, pady=5)
-        p_text = tk.Text(dialog, height=10, width=40)
+        p_text = tk.Text(dialog, height=10, width=40, bg="#ffffff", fg="#000000", insertbackground="#0066cc")
         p_text.insert("1.0", "S->AB\nA->a\nB->b")
         p_text.grid(row=4, column=1, columnspan=2, sticky="ew", padx=10)
 
