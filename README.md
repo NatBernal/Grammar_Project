@@ -6,6 +6,43 @@
 
 ---
 
+## ✨ Características
+
+### 🎨 Interfaz Moderna
+
+- **Tema Bootstrap oscuro** (morph) para un aspecto profesional y moderno
+- Diseño responsivo con interfaz intuitive
+- Barra de estado con mensajes de retroalimentación
+- Botones con estilos Bootstrap (info, success, primary, warning, danger)
+
+### 🔤 Soporte de Gramáticas
+
+- **Tipo 2 (GLC):** Gramáticas Libres de Contexto con soporte CNF
+- **Tipo 3 (Regulares):** Gramáticas regulares
+- Carga/guardado en formato JSON
+- Validación automática de gramáticas
+
+### ⚙️ Análisis Sintáctico
+
+- **Algoritmo CYK:** Para gramáticas libres de contexto en CNF
+- **Parser Regular:** Para gramáticas regulares (DFA simulation)
+- Auto-detección del tipo de gramática y algoritmo
+- Generación de árboles de derivación
+
+### 🔧 Generación de Cadenas
+
+- Generador BFS con límites de profundidad y cantidad
+- Obtención de cadenas más cortas del lenguaje
+- Exportación de resultados a archivos
+
+### 🧪 Testing Completo
+
+- **47 pruebas unitarias** con cobertura completa
+- Tests para parser CYK, parser regular, generador y gramática
+- Validación de casos normales y edge cases
+
+---
+
 ## 📋 Tabla de Contenidos
 
 1. [Requisitos](#requisitos)
@@ -24,6 +61,7 @@
 
 - **Python 3.8 o superior** ([Descargar Python](https://www.python.org/downloads/))
 - **tkinter** (incluido con Python en Windows y macOS)
+- **ttkbootstrap 1.6.0+** (se instala automáticamente con requirements.txt)
 
 ### Verificar Instalación
 
@@ -117,23 +155,29 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Si `requirements.txt` está vacío (solo usa librerías estándar):
+Esto instalará:
 
-```bash
-# No se necesita instalar nada adicional
-```
+- **ttkbootstrap** - Framework moderno con tema Bootstrap (morph theme)
+- Cualquier otra dependencia necesaria
 
 ---
 
 ## ▶️ Ejecución
 
-### Opción 1: Ejecutar Interfaz Gráfica
+### Opción 1: Ejecutar Interfaz Gráfica (Recomendado)
 
 Desde la raíz del proyecto:
 
 ```bash
-python ui/main.py
+python run.py
 ```
+
+Se abrirá una ventana con interfaz moderna con **tema oscuro Bootstrap**:
+
+- **Interfaz moderna y profesional** con tema "morph" de ttkbootstrap
+- **Botones con estilos Bootstrap** (colores info, success, primary, warning, danger)
+- **Barra de estado** para mensajes de retroalimentación
+- **Tres pestañas funcionales** con diseño optimizado
 
 O si estás en la carpeta `ui`:
 
@@ -147,17 +191,24 @@ python main.py
 Para verificar que todo funciona:
 
 ```bash
+pytest tests/
+```
+
+O ejecutar los tests específicos:
+
+```bash
 python tests/test_parser.py
+python tests/test_generator.py
 ```
 
 Deberías ver:
 
 ```
-Cadenas generadas: ['b', 'ab', 'aab', 'aaab', 'aaaab']
 ✅ test_generator_simple pasado
 ✅ test_cnf_check pasado
 ✅ test_cyk_simple pasado
 ✅ test_grammar_validation pasado
+... (47 tests total)
 
 🎉 Todos los tests pasaron correctamente
 ```

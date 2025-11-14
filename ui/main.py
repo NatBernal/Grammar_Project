@@ -1,5 +1,6 @@
-import tkinter as tk
-from tkinter import ttk, filedialog, messagebox, scrolledtext
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
+from tkinter import filedialog, messagebox, scrolledtext
 from services.grammar import Grammar
 from services.parser_cyk import cyk_parse, reconstruct_tree, is_cnf
 from services.parser_regular import parse_regular, validate_regular_grammar
@@ -7,13 +8,12 @@ from services.generator import generate_shortest
 from services.tree import TreeNode
 
 
-class App(tk.Tk):
+class App(ttk.Window):
     def __init__(self):
-        super().__init__()
-        self.title("Analizador Sintáctico de Gramáticas - UPTC")
+        super().__init__(themename="morph")
+        self.title("Analizador Sintáctico de Gramáticas - By Mile, Steven y Nata")
         self.geometry("1000x550")
         self.grammar = None
-        self.configure(bg="#f0f0f0")
         self._build_ui()
 
     def _build_ui(self):
@@ -27,35 +27,23 @@ class App(tk.Tk):
         notebook.pack(fill="both", expand=True)
 
         # TAB 1: Definir/Cargar Gramática
-        tab_grammar = ttk.Frame(notebook, padding="10", height=400, width=800)
-        tab_grammar.pack_propagate(False)
-        notebook.add(tab_grammar, text="📝 Gramática")
+        tab_grammar = ttk.Frame(notebook, padding="10")
+        notebook.add(tab_grammar, text="Gramática")
         self._build_grammar_tab(tab_grammar)
 
         # TAB 2: Parser (Análisis)
-        tab_parser = ttk.Frame(notebook, padding="10", height=400, width=800)
-        tab_parser.pack_propagate(False)
-        notebook.add(tab_parser, text="🔍 Parser")
+        tab_parser = ttk.Frame(notebook, padding="10")
+        notebook.add(tab_parser, text="Parser")
         self._build_parser_tab(tab_parser)
 
         # TAB 3: Generador de Cadenas
-        tab_generator = ttk.Frame(notebook, padding="10", height=400, width=800)
-        tab_generator.pack_propagate(False)
-        notebook.add(tab_generator, text="⚡ Generador")
+        tab_generator = ttk.Frame(notebook, padding="10")
+        notebook.add(tab_generator, text="Generador")
         self._build_generator_tab(tab_generator)
 
         # Barra de estado
-        self.status_bar = tk.Label(
-            self, 
-            text="No hay gramática cargada", 
-            bd=1, 
-            relief=tk.SUNKEN, 
-            anchor=tk.W,
-            bg="#e0e0e0",
-            fg="#000000",
-            font=("Arial", 9)
-        )
-        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+        self.status_bar = ttk.Label(self, text="Listo", relief="sunken", padding="5")
+        self.status_bar.pack(fill="x", side="bottom")
 
     def _build_grammar_tab(self, parent):
         """Tab para definir y cargar gramáticas."""
@@ -66,40 +54,40 @@ class App(tk.Tk):
         ttk.Button(
             top_frame, 
             text="📂 Cargar Gramática (JSON)", 
-            command=self.load_grammar
+            command=self.load_grammar,
+            bootstyle="info"
         ).pack(side="left", padx=5)
 
         ttk.Button(
             top_frame, 
             text="💾 Guardar Gramática", 
-            command=self.save_grammar
+            command=self.save_grammar,
+            bootstyle="success"
         ).pack(side="left", padx=5)
 
         ttk.Button(
             top_frame, 
             text="➕ Nueva Gramática", 
-            command=self.new_grammar_dialog
+            command=self.new_grammar_dialog,
+            bootstyle="primary"
         ).pack(side="left", padx=5)
 
         ttk.Button(
             top_frame, 
             text="✓ Validar", 
-            command=self.validate_grammar
+            command=self.validate_grammar,
+            bootstyle="warning"
         ).pack(side="left", padx=5)
 
         # Frame central: mostrar gramática
-        label = tk.Label(parent, text="Gramática Actual:", font=("Arial", 11, "bold"), 
-                        bg="#f0f0f0", fg="#333333")
+        label = ttk.Label(parent, text="Gramática Actual:", font=("Arial", 11, "bold"))
         label.pack(anchor="w")
         
         self.grammar_display = scrolledtext.ScrolledText(
             parent, 
-            height=25, 
+            height=20, 
             font=("Courier", 10),
-            bg="#ffffff",
-            fg="#000000",
-            insertbackground="#0066cc",
-            wrap=tk.WORD
+            wrap="word"
         )
         self.grammar_display.pack(fill="both", expand=True, pady=5)
         self.grammar_display.insert("1.0", "No hay gramática cargada. Use 'Cargar' o 'Nueva Gramática'.")
@@ -108,17 +96,23 @@ class App(tk.Tk):
     def _build_parser_tab(self, parent):
         """Tab para parsear cadenas."""
         # Frame de entrada
-        input_frame = ttk.LabelFrame(parent, text="Entrada", padding="10")
+        # Frame de entrada con título
+        input_frame_outer = ttk.Frame(parent)
+        input_frame_outer.pack(fill="x", pady=(0, 10))
+        ttk.Label(input_frame_outer, text="Entrada", font=("Arial", 11, "bold")).pack(anchor="w", padx=5, pady=(5, 0))
+        
+        input_frame = ttk.Frame(parent, padding="10")
         input_frame.pack(fill="x", pady=(0, 10))
 
         ttk.Label(input_frame, text="Cadena (tokens separados por espacio):").grid(row=0, column=0, sticky="w")
-        self.entry_parse = ttk.Entry(input_frame, width=60, font=("Arial", 10))
+        self.entry_parse = ttk.Entry(input_frame, width=60)
         self.entry_parse.grid(row=0, column=1, padx=10, sticky="ew")
 
         ttk.Button(
             input_frame, 
             text="🔍 Parsear", 
-            command=self.parse_string
+            command=self.parse_string,
+            bootstyle="info"
         ).grid(row=0, column=2)
 
         input_frame.columnconfigure(1, weight=1)
@@ -128,22 +122,23 @@ class App(tk.Tk):
         parser_frame.grid(row=1, column=0, columnspan=3, pady=(10, 0), sticky="w")
         
         ttk.Label(parser_frame, text="Algoritmo:").pack(side="left", padx=(0, 10))
-        self.parser_var = tk.StringVar(value="auto")
+        self.parser_var = ttk.StringVar(value="auto")
         ttk.Radiobutton(parser_frame, text="Auto-detectar", variable=self.parser_var, value="auto").pack(side="left", padx=5)
         ttk.Radiobutton(parser_frame, text="CYK (Tipo 2)", variable=self.parser_var, value="cyk").pack(side="left", padx=5)
         ttk.Radiobutton(parser_frame, text="Regular (Tipo 3)", variable=self.parser_var, value="regular").pack(side="left", padx=5)
 
         # Frame de resultado
-        result_frame = ttk.LabelFrame(parent, text="Resultado del Análisis", padding="10")
+        result_frame_outer = ttk.Frame(parent)
+        result_frame_outer.pack(fill="both", expand=True)
+        ttk.Label(result_frame_outer, text="Resultado del Análisis", font=("Arial", 11, "bold")).pack(anchor="w", padx=5, pady=(5, 0))
+        
+        result_frame = ttk.Frame(result_frame_outer, padding="10")
         result_frame.pack(fill="both", expand=True)
 
         self.result_text = scrolledtext.ScrolledText(
             result_frame, 
-            height=20, 
-            font=("Courier", 10),
-            bg="#ffffff",
-            fg="#000000",
-            insertbackground="#0066cc"
+            height=15, 
+            font=("Courier", 10)
         )
         self.result_text.pack(fill="both", expand=True)
 
@@ -151,14 +146,19 @@ class App(tk.Tk):
         ttk.Button(
             result_frame, 
             text="💾 Exportar Árbol", 
-            command=self.export_tree
+            command=self.export_tree,
+            bootstyle="success"
         ).pack(pady=(5, 0))
 
     def _build_generator_tab(self, parent):
         """Tab para generar cadenas."""
         # Controles
-        control_frame = ttk.LabelFrame(parent, text="Parámetros", padding="10")
-        control_frame.pack(fill="x", pady=(0, 10))
+        control_frame_outer = ttk.Frame(parent)
+        control_frame_outer.pack(fill="x", pady=(0, 10))
+        ttk.Label(control_frame_outer, text="Parámetros", font=("Arial", 11, "bold")).pack(anchor="w", padx=5, pady=(5, 0))
+        
+        control_frame = ttk.Frame(control_frame_outer, padding="10")
+        control_frame.pack(fill="x")
 
         ttk.Label(control_frame, text="Número de cadenas:").grid(row=0, column=0, sticky="w", padx=5)
         self.gen_limit = ttk.Spinbox(control_frame, from_=1, to=50, width=10)
@@ -173,20 +173,22 @@ class App(tk.Tk):
         ttk.Button(
             control_frame, 
             text="⚡ Generar Cadenas", 
-            command=self.generate_strings
+            command=self.generate_strings,
+            bootstyle="primary"
         ).grid(row=0, column=4, padx=10)
 
         # Resultados
-        result_frame = ttk.LabelFrame(parent, text="Cadenas Generadas", padding="10")
+        result_frame_outer = ttk.Frame(parent)
+        result_frame_outer.pack(fill="both", expand=True)
+        ttk.Label(result_frame_outer, text="Cadenas Generadas", font=("Arial", 11, "bold")).pack(anchor="w", padx=5, pady=(5, 0))
+        
+        result_frame = ttk.Frame(result_frame_outer, padding="10")
         result_frame.pack(fill="both", expand=True)
 
         self.gen_text = scrolledtext.ScrolledText(
             result_frame, 
             height=20, 
-            font=("Courier", 10),
-            bg="#ffffff",
-            fg="#000000",
-            insertbackground="#0066cc"
+            font=("Courier", 10)
         )
         self.gen_text.pack(fill="both", expand=True)
 
@@ -194,7 +196,8 @@ class App(tk.Tk):
         ttk.Button(
             result_frame, 
             text="💾 Exportar Cadenas", 
-            command=self.export_strings
+            command=self.export_strings,
+            bootstyle="success"
         ).pack(pady=(5, 0))
 
     # ============ MÉTODOS DE GRAMÁTICA ============
@@ -239,42 +242,49 @@ class App(tk.Tk):
 
     def new_grammar_dialog(self):
         """Abre diálogo para crear una nueva gramática."""
-        dialog = tk.Toplevel(self)
+        dialog = ttk.Toplevel(self)
         dialog.title("Nueva Gramática")
-        dialog.geometry("500x450")
-        dialog.transient(self)
-        dialog.grab_set()
-        dialog.configure(bg="#f0f0f0")
+        dialog.geometry("900x600")
+        dialog.resizable(True, True)
+        dialog.minsize(700, 500)
+        
+        # Frame principal con padding
+        main_frame = ttk.Frame(dialog, padding="15")
+        main_frame.pack(fill="both", expand=True)
 
         # Tipo
-        ttk.Label(dialog, text="Tipo de Gramática:").grid(row=0, column=0, sticky="w", padx=10, pady=5)
-        type_var = tk.StringVar(value="type2")
-        ttk.Radiobutton(dialog, text="Tipo 2 (GLC)", variable=type_var, value="type2").grid(row=0, column=1, sticky="w")
-        ttk.Radiobutton(dialog, text="Tipo 3 (Regular)", variable=type_var, value="type3").grid(row=0, column=2, sticky="w")
+        ttk.Label(main_frame, text="Tipo de Gramática:").grid(row=0, column=0, sticky="w", padx=5, pady=8)
+        type_var = ttk.StringVar(value="type2")
+        ttk.Radiobutton(main_frame, text="Tipo 2 (GLC)", variable=type_var, value="type2").grid(row=0, column=1, sticky="w", padx=5)
+        ttk.Radiobutton(main_frame, text="Tipo 3 (Regular)", variable=type_var, value="type3").grid(row=0, column=2, sticky="w", padx=5)
 
         # Símbolo inicial
-        ttk.Label(dialog, text="Símbolo Inicial (S):").grid(row=1, column=0, sticky="w", padx=10, pady=5)
-        s_entry = ttk.Entry(dialog, width=30)
+        ttk.Label(main_frame, text="Símbolo Inicial (S):").grid(row=1, column=0, sticky="w", padx=5, pady=8)
+        s_entry = ttk.Entry(main_frame, width=30)
         s_entry.insert(0, "S")
-        s_entry.grid(row=1, column=1, columnspan=2, sticky="ew", padx=10)
+        s_entry.grid(row=1, column=1, columnspan=2, sticky="ew", padx=5)
 
         # No terminales
-        ttk.Label(dialog, text="No Terminales (separados por coma):").grid(row=2, column=0, sticky="w", padx=10, pady=5)
-        n_entry = ttk.Entry(dialog, width=30)
+        ttk.Label(main_frame, text="No Terminales (separados por coma):").grid(row=2, column=0, sticky="w", padx=5, pady=8)
+        n_entry = ttk.Entry(main_frame, width=30)
         n_entry.insert(0, "S,A,B")
-        n_entry.grid(row=2, column=1, columnspan=2, sticky="ew", padx=10)
+        n_entry.grid(row=2, column=1, columnspan=2, sticky="ew", padx=5)
 
         # Terminales
-        ttk.Label(dialog, text="Terminales (separados por coma):").grid(row=3, column=0, sticky="w", padx=10, pady=5)
-        t_entry = ttk.Entry(dialog, width=30)
+        ttk.Label(main_frame, text="Terminales (separados por coma):").grid(row=3, column=0, sticky="w", padx=5, pady=8)
+        t_entry = ttk.Entry(main_frame, width=30)
         t_entry.insert(0, "a,b")
-        t_entry.grid(row=3, column=1, columnspan=2, sticky="ew", padx=10)
+        t_entry.grid(row=3, column=1, columnspan=2, sticky="ew", padx=5)
 
         # Producciones
-        ttk.Label(dialog, text="Producciones (una por línea, formato: A->aB):").grid(row=4, column=0, sticky="nw", padx=10, pady=5)
-        p_text = tk.Text(dialog, height=10, width=40, bg="#ffffff", fg="#000000", insertbackground="#0066cc")
+        ttk.Label(main_frame, text="Producciones (una por línea, formato: A->aB):").grid(row=4, column=0, sticky="nw", padx=5, pady=8)
+        p_text = scrolledtext.ScrolledText(main_frame, height=10, width=40, font=("Courier", 10))
         p_text.insert("1.0", "S->AB\nA->a\nB->b")
-        p_text.grid(row=4, column=1, columnspan=2, sticky="ew", padx=10)
+        p_text.grid(row=4, column=1, columnspan=2, sticky="ew", padx=5)
+        
+        # Configurar pesos de grid para que se adapte al redimensionamiento
+        main_frame.columnconfigure(1, weight=1)
+        main_frame.rowconfigure(4, weight=1)
 
         def create_grammar():
             try:
@@ -300,8 +310,12 @@ class App(tk.Tk):
             except Exception as e:
                 messagebox.showerror("Error", f"Error al crear gramática:\n{str(e)}")
 
-        ttk.Button(dialog, text="Crear", command=create_grammar).grid(row=5, column=1, pady=10)
-        ttk.Button(dialog, text="Cancelar", command=dialog.destroy).grid(row=5, column=2, pady=10)
+        # Frame para botones
+        button_frame = ttk.Frame(main_frame)
+        button_frame.grid(row=5, column=0, columnspan=3, pady=15)
+        
+        ttk.Button(button_frame, text="Crear", command=create_grammar, bootstyle="success").pack(side="left", padx=5)
+        ttk.Button(button_frame, text="Cancelar", command=dialog.destroy, bootstyle="danger").pack(side="left", padx=5)
 
     def validate_grammar(self):
         """Valida la gramática actual."""
@@ -410,8 +424,9 @@ class App(tk.Tk):
             
             self.current_tree = build(tree_struct)
             
-            self.result_text.insert("end", "ÁRBOL DE DERIVACIÓN:\n")
-            self.result_text.insert("end", "═══════════════════════════════════════\n")
+            self.result_text.insert("end", "╔════════════════════════════════════════╗\n")
+            self.result_text.insert("end", "║     ÁRBOL DE DERIVACIÓN               ║\n")
+            self.result_text.insert("end", "╚════════════════════════════════════════╝\n\n")
             self.result_text.insert("end", self.current_tree.to_text())
         else:
             self.result_text.insert("end", "No se puede generar árbol para cadena rechazada.\n")
@@ -504,7 +519,6 @@ class App(tk.Tk):
             messagebox.showinfo("Éxito", "Cadenas exportadas correctamente.")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo exportar:\n{str(e)}")
-
 
 if __name__ == "__main__":
     app = App()

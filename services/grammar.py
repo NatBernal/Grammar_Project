@@ -67,7 +67,6 @@ class Grammar:
             left = p.get("left")
             right = p.get("right", [])
             
-            # ✅ CORRECCIÓN: Indentación correcta
             if left not in self.N:
                 return False
             

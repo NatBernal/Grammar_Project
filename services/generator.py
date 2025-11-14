@@ -46,4 +46,4 @@ def generate_shortest(grammar: Grammar, limit: int = 10, max_depth: int = 12):
                             q.append(new_sent)
                 break  # Solo expandir el primer no terminal
     
-    return results  # ✅ CORRECTO: fuera del while
+    return results  # CORRECTO: fuera del while
