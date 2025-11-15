@@ -1,3 +1,4 @@
-if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+# ui package
+from .main import App
+
+__all__ = ["App"]

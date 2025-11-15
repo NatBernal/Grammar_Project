@@ -73,8 +73,7 @@ def check_environment():
 
 def run_gui():
     """Inicia la interfaz gráfica con tema Bootstrap morph."""
-    print("\n🚀 Iniciando Analizador Sintáctico...")
-    print("   Interfaz: ttkbootstrap (tema morph)")
+    print("\nIniciando Analizador Sintáctico...")
     print("   (Cierra la ventana para salir)\n")
     
     # Agregar directorio raíz al path
@@ -130,11 +129,7 @@ def run_tests():
 def show_help():
     """Muestra información de ayuda."""
     print("""
-╔════════════════════════════════════════════════════════════════╗
-║    Analizador Sintáctico de Gramáticas Formales               ║
-║    Universidad Pedagógica y Tecnológica de Colombia - UPTC    ║
-║    Interfaz: ttkbootstrap (tema Bootstrap morph)             ║
-╚════════════════════════════════════════════════════════════════╝
+Analizador Sintáctico de Gramáticas Formales
 
 USO:
     python run.py           Inicia la interfaz gráfica (tema oscuro)
@@ -154,17 +149,11 @@ INSTALACIÓN:
        python run.py
 
 CARACTERÍSTICAS:
-    ✨ Interfaz moderna con tema Bootstrap morph
-    🔤 Soporte de gramáticas Tipo 2 (GLC) y Tipo 3 (regulares)
-    ⚙️  Algoritmo CYK para análisis sintáctico
-    🔧 Generador de cadenas con BFS
-    🧪 47 tests unitarios con cobertura completa
-    📊 Exportación de árboles de derivación
-
-EJEMPLOS DE GRAMÁTICAS:
-    examples/ejemplo_cnf.json       - Gramática simple en CNF
-    examples/ejemplo_regular.json   - Gramática regular (Tipo 3)
-    examples/ejemplo_aritmetico.json - Expresiones aritméticas
+    - Soporte de gramáticas Tipo 2 (GLC) y Tipo 3 (regulares)
+    - Algoritmo CYK para análisis sintáctico
+    - Generador de cadenas con BFS
+    - 47 tests unitarios para validación
+    - Exportación de árboles de derivación y cadenas generadas
 
 DOCUMENTACIÓN:
     Consulta README.md para guía completa
@@ -176,8 +165,7 @@ SOLUCIÓN DE PROBLEMAS:
     • Si falta pytest: pip install pytest (para 47 tests)
 
 AUTORES:
-    UPTC - Ingeniería de Sistemas
-    Proyecto Lenguajes Formales
+    Steven León - Mileth Martínez - Natalia Bernal
     """)
 
 
