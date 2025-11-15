@@ -14,6 +14,7 @@ class App(ttk.Window):
         self.title("Analizador Sintáctico de Gramáticas - By Mile, Steven y Nata")
         self.geometry("1000x550")
         self.grammar = None
+        self.current_tree = None  # Inicializar el árbol
         self._build_ui()
 
     def _build_ui(self):
@@ -95,7 +96,6 @@ class App(ttk.Window):
 
     def _build_parser_tab(self, parent):
         """Tab para parsear cadenas."""
-        # Frame de entrada
         # Frame de entrada con título
         input_frame_outer = ttk.Frame(parent)
         input_frame_outer.pack(fill="x", pady=(0, 10))
@@ -104,7 +104,7 @@ class App(ttk.Window):
         input_frame = ttk.Frame(parent, padding="10")
         input_frame.pack(fill="x", pady=(0, 10))
 
-        ttk.Label(input_frame, text="Cadena (tokens separados por espacio):").grid(row=0, column=0, sticky="w")
+        ttk.Label(input_frame, text="Cadena:").grid(row=0, column=0, sticky="w")
         self.entry_parse = ttk.Entry(input_frame, width=60)
         self.entry_parse.grid(row=0, column=1, padx=10, sticky="ew")
 
@@ -127,10 +127,24 @@ class App(ttk.Window):
         ttk.Radiobutton(parser_frame, text="CYK (Tipo 2)", variable=self.parser_var, value="cyk").pack(side="left", padx=5)
         ttk.Radiobutton(parser_frame, text="Regular (Tipo 3)", variable=self.parser_var, value="regular").pack(side="left", padx=5)
 
-        # Frame de resultado
+        # Frame de resultado con botón en la parte superior
         result_frame_outer = ttk.Frame(parent)
         result_frame_outer.pack(fill="both", expand=True)
-        ttk.Label(result_frame_outer, text="Resultado del Análisis", font=("Arial", 11, "bold")).pack(anchor="w", padx=5, pady=(5, 0))
+        
+        # Frame para el título y el botón en la misma línea
+        title_frame = ttk.Frame(result_frame_outer)
+        title_frame.pack(fill="x", padx=5, pady=(5, 0))
+        
+        ttk.Label(title_frame, text="Resultado del Análisis", font=("Arial", 11, "bold")).pack(side="left")
+        
+        self.export_tree_btn = ttk.Button(
+            title_frame, 
+            text="💾 Exportar Árbol", 
+            command=self.export_tree,
+            bootstyle="success",
+            state="disabled"  # Inicialmente deshabilitado
+        )
+        self.export_tree_btn.pack(side="right", padx=5)
         
         result_frame = ttk.Frame(result_frame_outer, padding="10")
         result_frame.pack(fill="both", expand=True)
@@ -141,14 +155,35 @@ class App(ttk.Window):
             font=("Courier", 10)
         )
         self.result_text.pack(fill="both", expand=True)
+        
+        # Configurar tags para colores
+        self._configure_text_tags()
 
-        # Botón para exportar árbol
-        ttk.Button(
-            result_frame, 
-            text="💾 Exportar Árbol", 
-            command=self.export_tree,
-            bootstyle="success"
-        ).pack(pady=(5, 0))
+    def _configure_text_tags(self):
+        """Configura los tags de color para el texto de resultados."""
+        # Tag para encabezados
+        self.result_text.tag_config("header", foreground="#2c3e50", font=("Arial", 11, "bold"))
+        
+        # Tag para éxito (verde)
+        self.result_text.tag_config("success", foreground="#27ae60", font=("Courier", 10, "bold"))
+        
+        # Tag para rechazo (rojo)
+        self.result_text.tag_config("error", foreground="#e74c3c", font=("Courier", 10, "bold"))
+        
+        # Tag para información (azul)
+        self.result_text.tag_config("info", foreground="#3498db", font=("Courier", 10))
+        
+        # Tag para separadores
+        self.result_text.tag_config("separator", foreground="#95a5a6", font=("Courier", 10))
+        
+        # Tag para nodos del árbol
+        self.result_text.tag_config("tree_node", foreground="#8e44ad", font=("Courier", 10, "bold"))
+        
+        # Tag para terminales del árbol
+        self.result_text.tag_config("tree_terminal", foreground="#16a085", font=("Courier", 10))
+        
+        # Tag para derivaciones
+        self.result_text.tag_config("derivation", foreground="#2980b9", font=("Courier", 10))
 
     def _build_generator_tab(self, parent):
         """Tab para generar cadenas."""
@@ -177,10 +212,22 @@ class App(ttk.Window):
             bootstyle="primary"
         ).grid(row=0, column=4, padx=10)
 
-        # Resultados
+        # Frame de resultado con botón en la parte superior
         result_frame_outer = ttk.Frame(parent)
         result_frame_outer.pack(fill="both", expand=True)
-        ttk.Label(result_frame_outer, text="Cadenas Generadas", font=("Arial", 11, "bold")).pack(anchor="w", padx=5, pady=(5, 0))
+        
+        # Frame para el título y el botón en la misma línea
+        title_frame = ttk.Frame(result_frame_outer)
+        title_frame.pack(fill="x", padx=5, pady=(5, 0))
+        
+        ttk.Label(title_frame, text="Cadenas Generadas", font=("Arial", 11, "bold")).pack(side="left")
+        
+        ttk.Button(
+            title_frame, 
+            text="💾 Exportar Cadenas", 
+            command=self.export_strings,
+            bootstyle="success"
+        ).pack(side="right", padx=5)
         
         result_frame = ttk.Frame(result_frame_outer, padding="10")
         result_frame.pack(fill="both", expand=True)
@@ -192,16 +239,18 @@ class App(ttk.Window):
         )
         self.gen_text.pack(fill="both", expand=True)
 
-        # Botón exportar
-        ttk.Button(
-            result_frame, 
-            text="💾 Exportar Cadenas", 
-            command=self.export_strings,
-            bootstyle="success"
-        ).pack(pady=(5, 0))
-
     # ============ MÉTODOS DE GRAMÁTICA ============
 
+    def _traducir_tipo_gramatica(self, tipo):
+        """Traduce el tipo de gramática a español."""
+        traducciones = {
+            "type0": "Tipo 0 (Sin restricciones)",
+            "type1": "Tipo 1 (Sensible al contexto)",
+            "type2": "Tipo 2 (Libre de contexto / GLC)",
+            "type3": "Tipo 3 (Regular)"
+        }
+        return traducciones.get(tipo, tipo)
+    
     def load_grammar(self):
         """Carga una gramática desde archivo JSON."""
         path = filedialog.askopenfilename(
@@ -214,8 +263,9 @@ class App(ttk.Window):
         try:
             self.grammar = Grammar.load(path)
             self.update_grammar_display()
+            tipo_texto = self._traducir_tipo_gramatica(self.grammar.type)
             self.status_bar.config(text=f"✓ Gramática cargada: {path}")
-            messagebox.showinfo("Éxito", f"Gramática cargada correctamente.\nTipo: {self.grammar.type}\nSímbolo inicial: {self.grammar.S}")
+            messagebox.showinfo("Éxito", f"Gramática cargada correctamente.\nTipo: {tipo_texto}\nSímbolo inicial: {self.grammar.S}")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo cargar la gramática:\n{str(e)}")
 
@@ -371,7 +421,12 @@ class App(ttk.Window):
             messagebox.showwarning("Advertencia", "Ingrese una cadena para parsear.")
             return
         
-        tokens = text.split()
+        # Limpiar estado anterior
+        self.current_tree = None
+        self.export_tree_btn.config(state="disabled")
+        
+        # Convertir la cadena en tokens (cada carácter es un token)
+        tokens = list(text)
         self.result_text.delete("1.0", "end")
         
         try:
@@ -381,12 +436,14 @@ class App(ttk.Window):
             if parser_type == "auto":
                 parser_type = "regular" if self.grammar.type == "type3" else "cyk"
             
-            self.result_text.insert("end", f"═══════════════════════════════════════\n")
-            self.result_text.insert("end", f"ANÁLISIS SINTÁCTICO\n")
-            self.result_text.insert("end", f"═══════════════════════════════════════\n\n")
-            self.result_text.insert("end", f"Cadena: {text}\n")
-            self.result_text.insert("end", f"Tokens: {tokens}\n")
-            self.result_text.insert("end", f"Parser: {parser_type.upper()}\n\n")
+            self._insert_with_tag("Cadena de entrada: ", "info")
+            self.result_text.insert("end", f"\"{text}\"\n")
+            
+            self._insert_with_tag("Tokens: ", "info")
+            self.result_text.insert("end", f"{tokens}\n")
+            
+            self._insert_with_tag("Algoritmo: ", "info")
+            self.result_text.insert("end", f"{parser_type.upper()}\n\n")
             
             if parser_type == "cyk":
                 self._parse_cyk(tokens)
@@ -398,63 +455,198 @@ class App(ttk.Window):
         except Exception as e:
             messagebox.showerror("Error", f"Error durante el parsing:\n{str(e)}")
 
+    def _insert_with_tag(self, text, tag):
+        """Helper para insertar texto con un tag específico."""
+        self.result_text.insert("end", text, tag)
+
     def _parse_cyk(self, tokens):
         """Parser CYK para Tipo 2."""
         acept, back = cyk_parse(self.grammar, tokens)
         
-        self.result_text.insert("end", "─────────────────────────────────────\n")
-        self.result_text.insert("end", f"RESULTADO: {'✓ ACEPTADA' if acept else '✗ RECHAZADA'}\n")
-        self.result_text.insert("end", "─────────────────────────────────────\n\n")
-        
         if acept:
-            self.result_text.insert("end", f"Backpointers generados: {len(back)}\n\n")
+            self._insert_with_tag("Resultado: ✓ CADENA ACEPTADA\n\n", "success")
             
-            # Reconstruir árbol
-            tree_struct = reconstruct_tree(back, 0, len(tokens), self.grammar.S)
-            
-            def build(node):
-                symbol, children = node
-                child_nodes = []
-                for c in children:
-                    if isinstance(c, tuple):
-                        child_nodes.append(build(c))
-                    else:
-                        child_nodes.append(TreeNode(c))
-                return TreeNode(symbol, child_nodes)
-            
-            self.current_tree = build(tree_struct)
-            
-            self.result_text.insert("end", "╔════════════════════════════════════════╗\n")
-            self.result_text.insert("end", "║     ÁRBOL DE DERIVACIÓN               ║\n")
-            self.result_text.insert("end", "╚════════════════════════════════════════╝\n\n")
-            self.result_text.insert("end", self.current_tree.to_text())
+            try:
+                # Reconstruir árbol
+                tree_struct = reconstruct_tree(back, 0, len(tokens), self.grammar.S)
+                
+                def build(node):
+                    symbol, children = node
+                    child_nodes = []
+                    for c in children:
+                        if isinstance(c, tuple):
+                            child_nodes.append(build(c))
+                        else:
+                            child_nodes.append(TreeNode(c))
+                    return TreeNode(symbol, child_nodes)
+                
+                self.current_tree = build(tree_struct)
+                
+                # Habilitar botón de exportar
+                self.export_tree_btn.config(state="normal")
+                
+                # Mostrar árbol con estilo
+
+                self._insert_with_tag("\nÁrbol de derivación:\n", "header")
+                
+                # Insertar árbol con colores
+                self._insert_tree_colored(self.current_tree)
+                
+            except Exception as e:
+                print(f"ERROR al construir árbol: {e}")
+                import traceback
+                traceback.print_exc()
+                self._insert_with_tag(f"\n⚠️ Error al construir el árbol: {e}\n", "error")
+                self.current_tree = None
+                self.export_tree_btn.config(state="disabled")
         else:
-            self.result_text.insert("end", "No se puede generar árbol para cadena rechazada.\n")
+            self._insert_with_tag("Resultado: ✗ CADENA RECHAZADA\n\n", "error")
+            self._insert_with_tag("❌ La cadena no pertenece al lenguaje generado por la gramática.\n", "info")
+            self._insert_with_tag("   No se puede construir un árbol de derivación.\n", "info")
             self.current_tree = None
+            self.export_tree_btn.config(state="disabled")
+
+    def _insert_tree_colored(self, node, indent=0, is_last=True, prefix=""):
+        """Inserta el árbol con colores en el texto."""
+        connector = "└── " if is_last else "├── "
+        extension = "    " if is_last else "│   "
+        
+        # Insertar prefijo
+        self._insert_with_tag(prefix + connector, "separator")
+        
+        # Insertar símbolo con color
+        if node.is_leaf():
+            self._insert_with_tag(f'"{node.symbol}"', "tree_terminal")
+        else:
+            self._insert_with_tag(f'[{node.symbol}]', "tree_node")
+        
+        self.result_text.insert("end", "\n")
+        
+        # Procesar hijos
+        for i, child in enumerate(node.children):
+            is_last_child = (i == len(node.children) - 1)
+            if isinstance(child, TreeNode):
+                self._insert_tree_colored(child, indent + 1, is_last_child, prefix + extension)
+            else:
+                # Nodo terminal
+                child_connector = "└── " if is_last_child else "├── "
+                self._insert_with_tag(prefix + extension + child_connector, "separator")
+                self._insert_with_tag(f'"{child}"', "tree_terminal")
+                self.result_text.insert("end", "\n")
 
     def _parse_regular(self, tokens):
         """Parser para gramáticas regulares."""
         acept, derivation = parse_regular(self.grammar, tokens)
         
-        self.result_text.insert("end", "─────────────────────────────────────\n")
-        self.result_text.insert("end", f"RESULTADO: {'✓ ACEPTADA' if acept else '✗ RECHAZADA'}\n")
-        self.result_text.insert("end", "─────────────────────────────────────\n\n")
+        if acept:
+            self._insert_with_tag("Resultado: ✓ CADENA ACEPTADA\n\n", "success")
+            
+            if derivation:
+                
+                # Construir árbol de derivación desde los pasos
+                try:
+                    self.current_tree = self._build_tree_from_derivation(derivation, tokens)
+                    
+                    if self.current_tree:
+                        
+                        # Habilitar botón de exportar
+                        self.export_tree_btn.config(state="normal")
+                        
+                        # Mostrar árbol
+                        self._insert_with_tag("Árbol de derivación:\n", "header")
+                        
+                        self._insert_tree_colored(self.current_tree)
+                    else:
+                        self.export_tree_btn.config(state="disabled")
+                        
+                except Exception as e:
+                    print(f"ERROR al construir árbol regular: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    self.current_tree = None
+                    self.export_tree_btn.config(state="disabled")
+            else:
+                self.current_tree = None
+                self.export_tree_btn.config(state="disabled")
+        else:
+            self._insert_with_tag("Resultado: ✗ CADENA RECHAZADA\n\n", "error")
+            
+            if derivation:
+                self._insert_with_tag("Pasos de derivación:\n", "header")
+                
+                for i, (symbol, prod) in enumerate(derivation, 1):
+                    self._insert_with_tag(f"Paso {i}: ", "info")
+                    self._insert_with_tag(f"{prod}\n", "derivation")
+            
+            self.current_tree = None
+            self.export_tree_btn.config(state="disabled")
+    
+    def _build_tree_from_derivation(self, derivation, tokens):
+        """Construye un árbol de derivación desde los pasos de una gramática regular."""
+        if not derivation:
+            return None
         
-        if derivation:
-            self.result_text.insert("end", "PASOS DE DERIVACIÓN:\n")
-            for i, (symbol, prod) in enumerate(derivation, 1):
-                self.result_text.insert("end", f"{i}. {prod}\n")
+        # Las gramáticas regulares tienen derivaciones lineales
+        # Cada paso es (símbolo_actual, producción_aplicada)
+        # Ejemplo: S → aA, A → aA, A → b
         
-        self.current_tree = None
+        # Comenzar con el símbolo inicial
+        root_symbol = self.grammar.S
+        current_node = TreeNode(root_symbol)
+        root = current_node
+        
+        token_index = 0
+        
+        for step_num, (symbol, production) in enumerate(derivation):
+            # Parsear la producción (ej: "S → aA" o "A → b")
+            if " → " in production:
+                left, right = production.split(" → ")
+                right = right.strip()
+                
+                children = []
+                
+                # Procesar cada símbolo del lado derecho
+                i = 0
+                while i < len(right):
+                    char = right[i]
+                    
+                    # Verificar si es un terminal
+                    if char in self.grammar.T:
+                        # Es un terminal
+                        if token_index < len(tokens):
+                            children.append(TreeNode(tokens[token_index]))
+                            token_index += 1
+                        else:
+                            children.append(TreeNode(char))
+                    elif char in self.grammar.N:
+                        # Es un no terminal
+                        # Si no es el último paso, será expandido después
+                        if step_num < len(derivation) - 1:
+                            next_node = TreeNode(char)
+                            children.append(next_node)
+                            current_node = next_node  # Este será expandido en el siguiente paso
+                        else:
+                            # Último paso, puede ser un no terminal final o epsilon
+                            children.append(TreeNode(char))
+                    
+                    i += 1
+                
+                # Asignar hijos al nodo actual
+                if step_num == 0:
+                    root.children = children
+                else:
+                    current_node.children = children
+        
+        return root
 
     def export_tree(self):
-        """Exporta el árbol de derivación a archivo de texto."""
-        if not hasattr(self, 'current_tree') or not self.current_tree:
-            messagebox.showwarning("Advertencia", "No hay árbol para exportar.")
+        """Exporta el árbol de derivación como archivo de texto."""
+        if self.current_tree is None:
+            messagebox.showwarning("Advertencia", "No hay árbol para exportar.\nPrimero debe parsear una cadena aceptada con CYK.")
             return
         
         path = filedialog.asksaveasfilename(
-            title="Exportar Árbol",
+            title="Guardar Árbol",
             defaultextension=".txt",
             filetypes=[("Text files", "*.txt"), ("All files", "*.*")]
         )
@@ -464,7 +656,7 @@ class App(ttk.Window):
         try:
             with open(path, "w", encoding="utf-8") as f:
                 f.write(self.current_tree.to_text())
-            messagebox.showinfo("Éxito", "Árbol exportado correctamente.")
+            messagebox.showinfo("Éxito", f"Árbol exportado:\n{path}")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo exportar:\n{str(e)}")
 
@@ -480,15 +672,11 @@ class App(ttk.Window):
             limit = int(self.gen_limit.get())
             depth = int(self.gen_depth.get())
             
+            # Limpiar resultados anteriores
             self.gen_text.delete("1.0", "end")
-            self.gen_text.insert("end", f"Generando hasta {limit} cadenas (profundidad máx: {depth})...\n\n")
             
             strings = generate_shortest(self.grammar, limit=limit, max_depth=depth)
-            
-            self.gen_text.insert("end", f"═══════════════════════════════════════\n")
-            self.gen_text.insert("end", f"CADENAS GENERADAS: {len(strings)}\n")
-            self.gen_text.insert("end", f"═══════════════════════════════════════\n\n")
-            
+
             for i, s in enumerate(strings, 1):
                 self.gen_text.insert("end", f"{i:2d}. \"{s}\" (longitud: {len(s)})\n")
             
@@ -501,10 +689,19 @@ class App(ttk.Window):
     def export_strings(self):
         """Exporta las cadenas generadas a archivo."""
         content = self.gen_text.get("1.0", "end").strip()
-        if not content or "CADENAS GENERADAS" not in content:
+
+        # Si no hay texto, no hay nada que exportar
+        if not content:
             messagebox.showwarning("Advertencia", "No hay cadenas para exportar.")
             return
         
+        # Filtrar líneas vacías
+        lines = [line for line in content.splitlines() if line.strip() != ""]
+        if not lines:
+            messagebox.showwarning("Advertencia", "No hay cadenas para exportar.")
+            return
+        content_to_save = "\n".join(lines) + "\n"
+
         path = filedialog.asksaveasfilename(
             title="Exportar Cadenas",
             defaultextension=".txt",
@@ -512,13 +709,14 @@ class App(ttk.Window):
         )
         if not path:
             return
-        
+
         try:
             with open(path, "w", encoding="utf-8") as f:
-                f.write(content)
+                f.write(content_to_save)
             messagebox.showinfo("Éxito", "Cadenas exportadas correctamente.")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo exportar:\n{str(e)}")
+
 
 if __name__ == "__main__":
     app = App()

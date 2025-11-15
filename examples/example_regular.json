@@ -1,0 +1,14 @@
+{
+  "type": "type3",
+  "N": ["S", "A", "B"],
+  "T": ["a", "b"],
+  "S": "S",
+  "P": [
+    { "left": "S", "right": ["a", "A"] },
+    { "left": "S", "right": ["b", "B"] },
+    { "left": "A", "right": ["a", "A"] },
+    { "left": "A", "right": ["b"] },
+    { "left": "B", "right": ["b", "B"] },
+    { "left": "B", "right": ["a"] }
+  ]
+}
