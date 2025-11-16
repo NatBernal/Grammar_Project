@@ -150,13 +150,22 @@ Esto instalará:
 
 ## Ejecución
 
-Desde la raíz del proyecto:
+Desde la raíz del proyecto ejecute:
 
 ```bash
 python run.py
 ```
 
 Se abrirá una ventana con interfaz de la aplicación.
+
+Además a continuación encontrará comandos útiles:
+
+```bash
+    python run.py           # Inicia la interfaz gráfica
+    python run.py test      # Ejecuta los tests unitarios (47 tests)
+    python run.py check     # Verifica el entorno
+    python run.py help      # Muestra ayuda
+```
 
 ---
 
