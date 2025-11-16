@@ -3,6 +3,7 @@ from .grammar_tab import build_grammar_tab
 from .parser_tab import build_parser_tab
 from .generator_tab import build_generator_tab
 from .utils import save_text_to_file
+from .tree_visualizer import TreeVisualizer
 
 # services import (usados por la lógica)
 from services.grammar import Grammar
@@ -22,6 +23,7 @@ class App(ttk.Window):
         self.entry_parse = None
         self.parser_var = None
         self.export_tree_btn = None
+        self.visualize_tree_btn = None
         self.result_text = None
         self.grammar_display = None
         self.gen_limit = None
@@ -222,6 +224,8 @@ class App(ttk.Window):
         self.current_tree = None
         if self.export_tree_btn:
             self.export_tree_btn.config(state="disabled")
+        if self.visualize_tree_btn:
+            self.visualize_tree_btn.config(state="disabled")
 
         tokens = list(text)
         if self.result_text:
@@ -271,6 +275,8 @@ class App(ttk.Window):
 
                 if self.export_tree_btn:
                     self.export_tree_btn.config(state="normal")
+                if self.visualize_tree_btn:
+                    self.visualize_tree_btn.config(state="normal")
 
                 self._insert_with_tag("\nÁrbol de derivación:\n", "header")
                 self._insert_tree_colored(self.current_tree)
@@ -281,6 +287,8 @@ class App(ttk.Window):
                 self.current_tree = None
                 if self.export_tree_btn:
                     self.export_tree_btn.config(state="disabled")
+                if self.visualize_tree_btn:
+                    self.visualize_tree_btn.config(state="disabled")
         else:
             self._insert_with_tag("Resultado: ✗ CADENA RECHAZADA\n\n", "error")
             self._insert_with_tag("❌ La cadena no pertenece al lenguaje generado por la gramática.\n", "info")
@@ -288,6 +296,8 @@ class App(ttk.Window):
             self.current_tree = None
             if self.export_tree_btn:
                 self.export_tree_btn.config(state="disabled")
+            if self.visualize_tree_btn:
+                self.visualize_tree_btn.config(state="disabled")
 
     def _insert_tree_colored(self, node, indent=0, is_last=True, prefix=""):
         connector = "└── " if is_last else "├── "
@@ -318,27 +328,37 @@ class App(ttk.Window):
                     if self.current_tree:
                         if self.export_tree_btn:
                             self.export_tree_btn.config(state="normal")
+                        if self.visualize_tree_btn:
+                            self.visualize_tree_btn.config(state="normal")
                         self._insert_with_tag("Árbol de derivación\n", "header")
                         self._insert_tree_colored(self.current_tree)
                     else:
                         if self.export_tree_btn:
                             self.export_tree_btn.config(state="disabled")
+                        if self.visualize_tree_btn:
+                            self.visualize_tree_btn.config(state="disabled")
                 except Exception as e:
                     import traceback
                     traceback.print_exc()
                     self.current_tree = None
                     if self.export_tree_btn:
                         self.export_tree_btn.config(state="disabled")
+                    if self.visualize_tree_btn:
+                        self.visualize_tree_btn.config(state="disabled")
             else:
                 self.current_tree = None
                 if self.export_tree_btn:
                     self.export_tree_btn.config(state="disabled")
+                if self.visualize_tree_btn:
+                    self.visualize_tree_btn.config(state="disabled")
         else:
             self._insert_with_tag("✗ CADENA RECHAZADA\n\n", "error")
             self._insert_with_tag("❌ La cadena no pertenece al lenguaje generado por la gramática.\n", "info")
             self.current_tree = None
             if self.export_tree_btn:
                 self.export_tree_btn.config(state="disabled")
+            if self.visualize_tree_btn:
+                self.visualize_tree_btn.config(state="disabled")
 
     def _build_tree_from_derivation(self, derivation, tokens):
         if not derivation:
@@ -382,6 +402,16 @@ class App(ttk.Window):
             messagebox.showerror("Error", f"No se pudo exportar:\n{err}")
             return
         messagebox.showinfo("Éxito", f"Árbol exportado:\n{path}")
+
+    def visualize_tree(self):
+        """Abre una ventana con la visualización gráfica del árbol."""
+        from tkinter import messagebox
+        if self.current_tree is None:
+            messagebox.showwarning("Advertencia", "No hay árbol para visualizar.\nPrimero debe parsear una cadena aceptada.")
+            return
+        
+        # Crear ventana de visualización
+        TreeVisualizer(self, self.current_tree)
 
     # ---------- Generador ----------
     def generate_strings(self):

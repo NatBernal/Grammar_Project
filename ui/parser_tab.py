@@ -2,6 +2,7 @@ import ttkbootstrap as ttk
 from tkinter import scrolledtext, messagebox, filedialog
 from .utils import configure_result_text_tags, save_text_to_file
 from services.tree import TreeNode
+from .tree_visualizer import TreeVisualizer
 
 def build_parser_tab(app, parent):
     """Construye la pestaña del parser (y enlaza widgets a app)."""
@@ -41,6 +42,16 @@ def build_parser_tab(app, parent):
     title_frame.pack(fill="x", padx=5, pady=(5, 0))
 
     ttk.Label(title_frame, text="Resultado del Análisis", font=("Arial", 11, "bold")).pack(side="left")
+
+    # Botón para visualizar árbol gráficamente
+    app.visualize_tree_btn = ttk.Button(
+        title_frame,
+        text="🌳 Visualizar Árbol",
+        command=app.visualize_tree,
+        bootstyle="primary",
+        state="disabled"
+    )
+    app.visualize_tree_btn.pack(side="right", padx=5)
 
     app.export_tree_btn = ttk.Button(
         title_frame,
