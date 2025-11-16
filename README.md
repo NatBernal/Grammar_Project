@@ -119,23 +119,7 @@ cd Grammar_Project
 
 O descarga el ZIP y descomprímelo.
 
-### Paso 2: Crear Entorno Virtual (Opcional)
-
-**Windows:**
-
-```bash
-python -m venv venv
-venv\Scripts\activate
-```
-
-**Linux/macOS:**
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### Paso 3: Instalar Dependencias
+### Paso 2: Instalar Dependencias
 
 ```bash
 pip install -r requirements.txt
