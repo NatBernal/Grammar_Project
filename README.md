@@ -3,7 +3,7 @@
 **Universidad Pedagógica y Tecnológica de Colombia - UPTC**  
 **Asignatura:** Lenguajes Formales  
 **Proyecto:** Parser y Generador para Gramáticas Tipo 2 y 3  
-**Autores:** Mile, Steven y Nata
+**Autores:** Mileth Martinez, Steven León y Natalia Bernal
 
 ---
 
