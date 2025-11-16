@@ -52,9 +52,6 @@ class App(ttk.Window):
         self.status_bar = ttk.Label(self, text="Listo", relief="sunken", padding="5")
         self.status_bar.pack(fill="x", side="bottom")
 
-    # --- (AQUÍ van los métodos que tenías en tu archivo original)
-    # Para mantenerlo compacto, pego los métodos esenciales necesarios (idénticos a los tuyos).
-
     # ---------- helpers ----------
     def _traducir_tipo_gramatica(self, tipo):
         traducciones = {
