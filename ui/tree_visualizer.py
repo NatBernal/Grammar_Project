@@ -12,16 +12,16 @@ class TreeVisualizer(tk.Toplevel):
         self.tree_root = tree_root
         
         # Configuración de colores
-        self.node_color = "#c88fe0"
+        self.node_color = "#8e44ad"
         self.terminal_color = "#16a085"
         self.edge_color = "#7f8c8d"
         self.node_border = "#2c3e50"
         
         # Parámetros de dibujo
-        self.node_radius = 30
+        self.node_radius = 20
         self.level_height = 100
-        self.min_horizontal_gap = 60
-    
+        self.min_horizontal_gap = 20
+        self.node_padding = 20  # Espacio mínimo entre bordes de nodos
         
         self._build_ui()
         self._calculate_positions()
@@ -59,12 +59,6 @@ class TreeVisualizer(tk.Toplevel):
             button_frame,
             text="🔄 Reiniciar Vista",
             command=self._reset_view
-        ).pack(side="left", padx=2)
-        
-        ttk.Button(
-            button_frame,
-            text="❌ Cerrar",
-            command=self.destroy
         ).pack(side="left", padx=2)
         
         # Frame para el canvas con scrollbars
@@ -117,6 +111,10 @@ class TreeVisualizer(tk.Toplevel):
             node._width = 1
             return 1
         
+        if not node.children:
+            node._width = 1
+            return 1
+        
         total_width = 0
         for child in node.children:
             if isinstance(child, type(node)):  # TreeNode
@@ -124,7 +122,8 @@ class TreeVisualizer(tk.Toplevel):
             else:
                 total_width += 1  # Terminal como string
         
-        node._width = max(total_width, 1)
+        # Asegurar un ancho mínimo basado en el número de hijos
+        node._width = max(total_width, len(node.children) * 1.5)
         return node._width
     
     def _assign_positions(self, node, x, y, width):
@@ -135,33 +134,38 @@ class TreeVisualizer(tk.Toplevel):
         if node.is_leaf() or not node.children:
             return
         
-        # Calcular posiciones de los hijos
-        total_child_width = sum(
-            child._width if hasattr(child, '_width') else 1
-            for child in node.children
-        )
-        
-        current_x = x - (total_child_width * self.min_horizontal_gap) / 2
-        
+        # Calcular el ancho total necesario para todos los hijos
+        children_info = []
         for child in node.children:
             if isinstance(child, type(node)):  # TreeNode
-                child_width = child._width * self.min_horizontal_gap
-                child_x = current_x + child_width / 2
-                child_y = y + self.level_height
-                
-                self._assign_positions(child, child_x, child_y, child_width)
-                current_x += child_width
+                child_width = child._width if hasattr(child, '_width') else 1
+                children_info.append(('node', child, child_width))
             else:
-                # Terminal como string
-                child_x = current_x + self.min_horizontal_gap / 2
-                child_y = y + self.level_height
-                
-                # Guardar posición para dibujar después
+                children_info.append(('terminal', child, 1))
+        
+        total_child_width = sum(info[2] for info in children_info)
+        
+        # Calcular el espacio total incluyendo padding entre nodos
+        spacing = self.min_horizontal_gap + self.node_padding
+        available_space = total_child_width * spacing
+        start_x = x - available_space / 2
+        
+        current_x = start_x
+        
+        for child_type, child, child_width in children_info:
+            child_space = child_width * spacing
+            child_x = current_x + child_space / 2
+            child_y = y + self.level_height
+            
+            if child_type == 'node':
+                self._assign_positions(child, child_x, child_y, child_space)
+            else:
+                # Terminal como string - guardar posición
                 if not hasattr(node, '_terminal_positions'):
                     node._terminal_positions = []
                 node._terminal_positions.append((child, child_x, child_y))
-                
-                current_x += self.min_horizontal_gap
+            
+            current_x += child_space
     
     def _draw_tree(self):
         """Dibuja el árbol en el canvas."""
@@ -279,7 +283,8 @@ class TreeVisualizer(tk.Toplevel):
         """Aumenta el zoom del árbol."""
         self.node_radius = min(self.node_radius + 5, 50)
         self.level_height = min(self.level_height + 10, 150)
-        self.min_horizontal_gap = min(self.min_horizontal_gap + 10, 100)
+        self.min_horizontal_gap = min(self.min_horizontal_gap + 15, 150)
+        self.node_padding = min(self.node_padding + 5, 60)
         self._calculate_positions()
         self._draw_tree()
     
@@ -287,7 +292,8 @@ class TreeVisualizer(tk.Toplevel):
         """Reduce el zoom del árbol."""
         self.node_radius = max(self.node_radius - 5, 15)
         self.level_height = max(self.level_height - 10, 40)
-        self.min_horizontal_gap = max(self.min_horizontal_gap - 10, 20)
+        self.min_horizontal_gap = max(self.min_horizontal_gap - 15, 50)
+        self.node_padding = max(self.node_padding - 5, 20)
         self._calculate_positions()
         self._draw_tree()
     
@@ -295,7 +301,7 @@ class TreeVisualizer(tk.Toplevel):
         """Reinicia los valores de zoom."""
         self.node_radius = 30
         self.level_height = 100
-        self.min_horizontal_gap = 60
+        self.min_horizontal_gap = 80
         self._calculate_positions()
         self._draw_tree()
     

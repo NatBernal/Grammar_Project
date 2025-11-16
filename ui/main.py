@@ -21,7 +21,6 @@ class App(ttk.Window):
         self.current_tree = None
         # variables que se crearán en cada tab
         self.entry_parse = None
-        self.parser_var = None
         self.export_tree_btn = None
         self.visualize_tree_btn = None
         self.result_text = None
@@ -232,16 +231,11 @@ class App(ttk.Window):
             self.result_text.delete("1.0", "end")
 
         try:
-            parser_type = self.parser_var.get()
-            if parser_type == "auto":
-                parser_type = "regular" if self.grammar.type == "type3" else "cyk"
+            # Auto-detectar el algoritmo según el tipo de gramática
+            parser_type = "regular" if self.grammar.type == "type3" else "cyk"
 
-            self._insert_with_tag("Cadena de entrada: ", "info")
-            self.result_text.insert("end", f"\"{text}\"\n")
-            self._insert_with_tag("Tokens: ", "info")
-            self.result_text.insert("end", f"{tokens}\n")
             self._insert_with_tag("Algoritmo: ", "info")
-            self.result_text.insert("end", f"{parser_type.upper()}\n\n")
+            self.result_text.insert("end", f"{parser_type.upper()}\n \n", "info")
 
             if parser_type == "cyk":
                 self._parse_cyk(tokens)
@@ -278,7 +272,7 @@ class App(ttk.Window):
                 if self.visualize_tree_btn:
                     self.visualize_tree_btn.config(state="normal")
 
-                self._insert_with_tag("\nÁrbol de derivación:\n", "header")
+                self._insert_with_tag("Árbol de derivación:\n", "header")
                 self._insert_tree_colored(self.current_tree)
             except Exception as e:
                 import traceback

@@ -204,11 +204,7 @@ Además a continuación encontrará comandos útiles:
 1. Ingresa la cadena en el campo de texto
    - **Para gramáticas simples:** Escribe la cadena directamente (ej: `aaaabb`)
    - **Para tokens compuestos:** Separa con espacios (ej: `id + id * id`)
-2. Selecciona algoritmo:
-   - **Auto-detectar:** Usa el tipo de la gramática (recomendado)
-   - **CYK:** Para Tipo 2 (debe estar en CNF)
-   - **Regular:** Para Tipo 3
-3. Click en **[🔍 Parsear]**
+2. Click en **[🔍 Parsear]**
 
 #### **Resultado**
 

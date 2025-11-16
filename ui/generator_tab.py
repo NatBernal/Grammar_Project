@@ -22,7 +22,7 @@ def build_generator_tab(app, parent):
 
     ttk.Button(
         control_frame,
-        text="⚡ Generar Cadenas",
+        text="Generar Cadenas",
         command=app.generate_strings,
         bootstyle="primary"
     ).grid(row=0, column=4, padx=10)
