@@ -2,60 +2,47 @@
 
 **Universidad Pedagógica y Tecnológica de Colombia - UPTC**  
 **Asignatura:** Lenguajes Formales  
-**Proyecto:** Parser y Generador para Gramáticas Tipo 2 y 3
+**Proyecto:** Parser y Generador para Gramáticas Tipo 2 y 3  
+**Autores:** Mile, Steven y Nata
 
 ---
 
-## ✨ Características
+## Características
 
-### 🎨 Interfaz Moderna
+### Interfaz
 
-- **Tema Bootstrap oscuro** (morph) para un aspecto profesional y moderno
-- Diseño responsivo con interfaz intuitive
-- Barra de estado con mensajes de retroalimentación
+- **Tema Bootstrap claro** (morph) para un aspecto profesional y moderno
+- Diseño intuitivo y organizadadp por pestañas
+- Barra de estado con mensajes de retroalimentación en tiempo real
 - Botones con estilos Bootstrap (info, success, primary, warning, danger)
+- **Visualización con colores** en resultados de análisis y árboles de derivación
 
-### 🔤 Soporte de Gramáticas
+### Soporte de Gramáticas
 
 - **Tipo 2 (GLC):** Gramáticas Libres de Contexto con soporte CNF
 - **Tipo 3 (Regulares):** Gramáticas regulares
 - Carga/guardado en formato JSON
 - Validación automática de gramáticas
+- Diálogo intuitivo para crear gramáticas desde cero
 
-### ⚙️ Análisis Sintáctico
+### Análisis Sintáctico
 
-- **Algoritmo CYK:** Para gramáticas libres de contexto en CNF
-- **Parser Regular:** Para gramáticas regulares (DFA simulation)
+- **Algoritmo CYK:** Para gramáticas libres de contexto en CNF(Chomsky Normal Form: reglas solo de tipo A→BC o A→a)
+- **Parser Regular:** Para gramáticas regulares (simulación de DFA)
 - Auto-detección del tipo de gramática y algoritmo
-- Generación de árboles de derivación
+- Generación de árboles de derivación con visualización coloreada
+- Exportación de árboles a archivos de texto
 
-### 🔧 Generación de Cadenas
+### Generación de Cadenas
 
 - Generador BFS con límites de profundidad y cantidad
 - Obtención de cadenas más cortas del lenguaje
+- Visualización ordenada por longitud
 - Exportación de resultados a archivos
 
-### 🧪 Testing Completo
-
-- **47 pruebas unitarias** con cobertura completa
-- Tests para parser CYK, parser regular, generador y gramática
-- Validación de casos normales y edge cases
-
 ---
 
-## 📋 Tabla de Contenidos
-
-1. [Requisitos](#requisitos)
-2. [Estructura del Proyecto](#estructura-del-proyecto)
-3. [Instalación](#instalación)
-4. [Ejecución](#ejecución)
-5. [Uso de la Aplicación](#uso-de-la-aplicación)
-6. [Ejemplos](#ejemplos)
-7. [Solución de Problemas](#solución-de-problemas)
-
----
-
-## 🔧 Requisitos
+## Requisitos
 
 ### Software Necesario
 
@@ -83,57 +70,56 @@ Si `tkinter` no está instalado:
 sudo apt-get install python3-tk
 ```
 
-**En Fedora:**
-
-```bash
-sudo dnf install python3-tkinter
-```
-
 **En macOS/Windows:** tkinter viene incluido por defecto.
 
 ---
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 project/
-├── services/
+├── services/                    # Lógica de negocio
 │   ├── __init__.py
-│   ├── grammar.py         # Modelo de gramática + persistencia JSON
-│   ├── parser_cyk.py      # Parser CYK para Gramáticas Libres de Contexto
-│   ├── parser_regular.py  # Parser para Gramáticas Regulares
-│   ├── generator.py       # Generador de cadenas (BFS)
-│   └── tree.py            # Estructura de árbol de derivación
-├── ui/
+│   ├── grammar.py              # Modelo de gramática + persistencia JSON
+│   ├── parser_cyk.py           # Parser CYK para Gramáticas Libres de Contexto
+│   ├── parser_regular.py       # Parser para Gramáticas Regulares
+│   ├── generator.py            # Generador de cadenas (BFS)
+│   └── tree.py                 # Estructura de árbol de derivación
+│
+├── ui/                          # Interfaz de usuario (modular)
 │   ├── __init__.py
-│   └── main.py            # Interfaz gráfica (Tkinter)
-├── tests/
-│   ├── test_parser.py     # Tests unitarios
-│   └── test_generator.py  # Tests del generador
-├── examples/
-│   ├── ejemplo_cnf.json       # Gramática en CNF
-│   ├── ejemplo_regular.json   # Gramática regular
+│   ├── main.py                 # Clase principal App + lógica de negocio UI
+│   ├── grammar_tab.py          # Construcción de pestaña Gramática
+│   ├── parser_tab.py           # Construcción de pestaña Parser
+│   ├── generator_tab.py        # Construcción de pestaña Generador
+│   └── utils.py                # Utilidades (guardar archivos, tags de color)
+│
+├── examples/                    # Ejemplos de gramáticas
+│   ├── ejemplo_cnf.json        # Gramática en CNF
+│   ├── ejemplo_regular.json    # Gramática regular
 │   └── ejemplo_aritmetico.json # Expresiones aritméticas
-├── requirements.txt
-└── README.md
+│
+├── run.py                       # Script principal de ejecución
+├── requirements.txt             # Dependencias del proyecto
+└── README.md                    # Este archivo
 ```
 
 ---
 
-## 💿 Instalación
+## Instalación
 
 ### Paso 1: Clonar/Descargar el Proyecto
 
 Si tienes Git:
 
 ```bash
-git clone <URL_DEL_REPOSITORIO>
-cd project
+git clone https://github.com/NatBernal/Grammar_Project
+cd Grammar_Project
 ```
 
 O descarga el ZIP y descomprímelo.
 
-### Paso 2: Crear Entorno Virtual (Recomendado)
+### Paso 2: Crear Entorno Virtual (Opcional)
 
 **Windows:**
 
@@ -162,9 +148,7 @@ Esto instalará:
 
 ---
 
-## ▶️ Ejecución
-
-### Opción 1: Ejecutar Interfaz Gráfica (Recomendado)
+## Ejecución
 
 Desde la raíz del proyecto:
 
@@ -172,83 +156,26 @@ Desde la raíz del proyecto:
 python run.py
 ```
 
-Se abrirá una ventana con interfaz moderna con **tema oscuro Bootstrap**:
-
-- **Interfaz moderna y profesional** con tema "morph" de ttkbootstrap
-- **Botones con estilos Bootstrap** (colores info, success, primary, warning, danger)
-- **Barra de estado** para mensajes de retroalimentación
-- **Tres pestañas funcionales** con diseño optimizado
-
-O si estás en la carpeta `ui`:
-
-```bash
-cd ui
-python main.py
-```
-
-### Opción 2: Ejecutar Tests
-
-Para verificar que todo funciona:
-
-```bash
-pytest tests/
-```
-
-O ejecutar los tests específicos:
-
-```bash
-python tests/test_parser.py
-python tests/test_generator.py
-```
-
-Deberías ver:
-
-```
-✅ test_generator_simple pasado
-✅ test_cnf_check pasado
-✅ test_cyk_simple pasado
-✅ test_grammar_validation pasado
-... (47 tests total)
-
-🎉 Todos los tests pasaron correctamente
-```
-
-### Opción 3: Usar como Módulo
-
-```python
-from services.grammar import Grammar
-from services.parser_cyk import cyk_parse
-from services.generator import generate_shortest
-
-# Cargar gramática
-g = Grammar.load("examples/ejemplo_cnf.json")
-
-# Parsear cadena
-aceptada, back = cyk_parse(g, ["a", "b"])
-print(f"¿Aceptada?: {aceptada}")
-
-# Generar cadenas
-cadenas = generate_shortest(g, limit=10)
-print(f"Cadenas generadas: {cadenas}")
-```
+Se abrirá una ventana con interfaz de la aplicación.
 
 ---
 
-## 📖 Uso de la Aplicación
+## Uso de la Aplicación
 
-### 1️⃣ Pestaña "📝 Gramática"
+### 1 Pestaña "Gramática"
 
 #### **Cargar Gramática Existente**
 
 1. Click en **[📂 Cargar Gramática (JSON)]**
 2. Selecciona un archivo `.json` (ejemplos en carpeta `examples/`)
 3. La gramática se mostrará en el área de texto
+4. La barra de estado indicará el tipo de gramática cargada
 
 #### **Crear Nueva Gramática**
 
 1. Click en **[➕ Nueva Gramática]**
 2. En el diálogo:
-   - Selecciona tipo: **Tipo 2** o **Tipo 3**
+   - Selecciona tipo: **Tipo 2 (GLC)** o **Tipo 3 (Regular)**
    - Ingresa símbolo inicial (ej: `S`)
    - Ingresa no terminales separados por coma (ej: `S,A,B`)
    - Ingresa terminales separados por coma (ej: `a,b`)
@@ -267,6 +194,7 @@ print(f"Cadenas generadas: {cadenas}")
    - La gramática es válida
    - Está en CNF (necesario para CYK)
    - Es regular válida
+   - Traducción del tipo al español
 
 #### **Guardar Gramática**
 
@@ -276,43 +204,60 @@ print(f"Cadenas generadas: {cadenas}")
 
 ---
 
-### 2️⃣ Pestaña "🔍 Parser"
+### 2️ Pestaña "🔍 Parser"
 
 #### **Parsear una Cadena**
 
 1. Ingresa la cadena en el campo de texto
-   - **Importante:** Separa tokens con espacios
-   - Ejemplo: `a b` para la cadena "ab"
-   - Ejemplo: `id + id * id` para expresiones
+   - **Para gramáticas simples:** Escribe la cadena directamente (ej: `aaaabb`)
+   - **Para tokens compuestos:** Separa con espacios (ej: `id + id * id`)
 2. Selecciona algoritmo:
-   - **Auto-detectar:** Usa el tipo de la gramática
+   - **Auto-detectar:** Usa el tipo de la gramática (recomendado)
    - **CYK:** Para Tipo 2 (debe estar en CNF)
    - **Regular:** Para Tipo 3
 3. Click en **[🔍 Parsear]**
 
 #### **Resultado**
 
-- Muestra si la cadena fue **✓ ACEPTADA** o **✗ RECHAZADA**
-- Si fue aceptada (y usas CYK), muestra el **Árbol de Derivación**
-- Para gramáticas regulares, muestra los **Pasos de Derivación**
+Se mostrará con colores:
+
+- **Verde:** ✓ CADENA ACEPTADA
+- **Rojo:** ✗ CADENA RECHAZADA
+- **Azul:** Información de entrada (cadena, tokens, algoritmo)
+- **Morado:** Nodos no terminales del árbol `[S]`
+- **Verde azulado:** Nodos terminales del árbol `"a"`
+
+Si la cadena fue aceptada:
+
+- **Para CYK:** Muestra el árbol de derivación completo
+- **Para Regular:** Muestra el árbol de derivación lineal
 
 #### **Exportar Árbol**
 
 1. Después de parsear una cadena aceptada
-2. Click en **[💾 Exportar Árbol]**
-3. Se guardará como archivo `.txt`
+2. El botón **[💾 Exportar Árbol]** se habilitará automáticamente
+3. Click para guardar como archivo `.txt`
 
 ---
 
-### 3️⃣ Pestaña "⚡ Generador"
+### 3️ Pestaña "Generador"
 
 #### **Generar Cadenas**
 
 1. Configura parámetros:
    - **Número de cadenas:** Cuántas generar (máx 50)
-   - **Profundidad máxima:** Límite de expansión
+   - **Profundidad máxima:** Límite de expansión (recomendado: 12-20)
 2. Click en **[⚡ Generar Cadenas]**
 3. Se mostrarán las cadenas **más cortas** generadas por BFS
+4. Cada cadena incluye su longitud
+
+Ejemplo de salida:
+
+```
+ 1. "ab" (longitud: 2)
+ 2. "aabb" (longitud: 4)
+ 3. "aaabbb" (longitud: 6)
+```
 
 #### **Exportar Cadenas**
 
@@ -322,147 +267,72 @@ print(f"Cadenas generadas: {cadenas}")
 
 ---
 
-## 📝 Ejemplos
+## 🏗️ Arquitectura del Código
 
-### Ejemplo 1: Gramática Simple en CNF
+### Diseño Modular
 
-**Archivo:** `examples/ejemplo_cnf.json`
+El proyecto está organizado siguiendo el patrón de separación de responsabilidades:
 
-```json
-{
-  "type": "type2",
-  "N": ["S", "A", "B"],
-  "T": ["a", "b"],
-  "S": "S",
-  "P": [
-    { "left": "S", "right": ["A", "B"] },
-    { "left": "A", "right": ["a"] },
-    { "left": "B", "right": ["b"] }
-  ]
-}
+#### **Capa de Servicios (`services/`)**
+
+- Contiene la lógica de negocio pura
+- Independiente de la interfaz gráfica
+- Reutilizable y testeable
+
+#### **Capa de Interfaz (`ui/`)**
+
+- **`main.py`**: Clase principal `App` que coordina toda la aplicación
+  - Gestiona el estado (gramática, árbol actual)
+  - Implementa toda la lógica de negocio de la UI
+  - Se comunica con los servicios
+- **`grammar_tab.py`**: Construye la pestaña de gramática
+  - Función `build_grammar_tab(app, parent)`
+  - Crea widgets y los enlaza a `app`
+- **`parser_tab.py`**: Construye la pestaña de parser
+  - Función `build_parser_tab(app, parent)`
+  - Configura visualización con colores
+- **`generator_tab.py`**: Construye la pestaña de generador
+  - Función `build_generator_tab(app, parent)`
+- **`utils.py`**: Funciones auxiliares
+  - `save_text_to_file()`: Guardar contenido
+  - `configure_result_text_tags()`: Configurar colores
+
+### Flujo de Datos
+
+```
+Usuario → UI (main.py) → Services → Resultados → UI
 ```
 
-**Lenguaje:** L = {ab}
+**Ejemplo de parseo:**
 
-**Probar:**
-
-- Cadena: `a b` → ✓ Aceptada
-- Cadena: `a a` → ✗ Rechazada
+1. Usuario ingresa cadena en `parser_tab.py`
+2. `parser_tab.py` llama a `app.parse_string()`
+3. `main.py` procesa y llama a `cyk_parse()` o `parse_regular()`
+4. `services/` retorna resultados
+5. `main.py` actualiza la interfaz con colores
 
 ---
 
-### Ejemplo 2: Gramática Regular
+## Solución de Problemas
 
-**Archivo:** `examples/ejemplo_regular.json`
-
-```json
-{
-  "type": "type3",
-  "N": ["S", "A"],
-  "T": ["a", "b"],
-  "S": "S",
-  "P": [
-    { "left": "S", "right": ["a", "A"] },
-    { "left": "A", "right": ["b", "A"] },
-    { "left": "A", "right": ["b"] }
-  ]
-}
-```
-
-**Lenguaje:** L = {ab+} (a seguida de una o más b's)
-
-**Probar:**
-
-- `a b` → ✓ Aceptada
-- `a b b` → ✓ Aceptada
-- `a b b b` → ✓ Aceptada
-- `a a` → ✗ Rechazada
-
----
-
-### Ejemplo 3: Expresiones Aritméticas (CNF)
-
-**Archivo:** `examples/ejemplo_aritmetico.json`
-
-```json
-{
-  "type": "type2",
-  "N": ["E", "T", "F", "P1", "M1"],
-  "T": ["id", "+", "*"],
-  "S": "E",
-  "P": [
-    { "left": "E", "right": ["E", "P1"] },
-    { "left": "E", "right": ["T"] },
-    { "left": "P1", "right": ["+", "T"] },
-    { "left": "T", "right": ["T", "M1"] },
-    { "left": "T", "right": ["F"] },
-    { "left": "M1", "right": ["*", "F"] },
-    { "left": "F", "right": ["id"] }
-  ]
-}
-```
-
-**Lenguaje:** Expresiones aritméticas simples
-
-**Probar:**
-
-- `id` → ✓ Aceptada
-- `id + id` → ✓ Aceptada
-- `id * id + id` → ✓ Aceptada
-
----
-
-## 🐛 Solución de Problemas
-
-### ❌ Error: "No module named 'services'"
-
-**Causa:** Estás ejecutando desde la carpeta incorrecta.
-
-**Solución:**
-
-```bash
-# Asegúrate de estar en la raíz del proyecto
-cd /ruta/al/project
-python ui/main.py
-```
-
-O agrega el path:
-
-```python
-import sys
-sys.path.append('..')
-```
-
----
-
-### ❌ Error: "La gramática debe estar en CNF para usar CYK"
+### Error: "La gramática debe estar en CNF para usar CYK"
 
 **Causa:** Intentas usar CYK con una gramática que no está en Forma Normal de Chomsky.
 
 **Solución:**
 
 1. Valida la gramática: Click en **[✓ Validar]**
-2. Si no está en CNF, debes:
-   - Convertirla manualmente a CNF
-   - O usar un parser diferente
+2. Si no está en CNF, debes convertirla manualmente o usar parser regular
 
-**Conversión manual a CNF (ejemplo):**
+**Forma Normal de Chomsky requiere:**
 
-❌ **Original:** `S → aSb`
-
-✅ **CNF:**
-
-```
-S → A1 B1
-A1 → a
-B1 → S1
-S1 → S B2
-B2 → b
-```
+- Producciones de la forma: `A → BC` (dos no terminales)
+- O: `A → a` (un terminal)
+- No producciones epsilon (excepto S)
 
 ---
 
-### ❌ Error: "tkinter no está instalado"
+### Error: "tkinter no está instalado"
 
 **Solución en Linux:**
 
@@ -472,37 +342,50 @@ sudo apt-get install python3-tk
 
 ---
 
-### ❌ La aplicación no muestra resultados al parsear
+### La aplicación no muestra resultados al parsear
 
 **Verificar:**
 
 1. ¿Cargaste una gramática? (debe decir en la barra de estado)
-2. ¿Separaste tokens con espacios? (`a b` no `ab`)
-3. ¿La gramática está en CNF si usas CYK?
+2. ¿La gramática está en CNF si usas CYK?
+3. ¿Los tokens coinciden con los terminales de la gramática?
 
 ---
 
-### ❌ El generador no produce cadenas
+### El árbol no se exporta
+
+**Causa:** El botón de exportar está deshabilitado.
+
+**Solución:**
+
+- Solo se habilita después de parsear una cadena **aceptada**
+- Verifica que la cadena fue aceptada (texto en verde)
+
+---
+
+### El generador no produce cadenas
 
 **Causas posibles:**
 
 1. **Profundidad insuficiente:** Aumenta "Profundidad máxima" a 20-30
 2. **Gramática recursiva infinita:** Verifica que existan producciones terminales
-3. **Bug de indentación:** Asegúrate de usar el `generator.py` corregido
+3. **Gramática sin cadenas cortas:** Algunas gramáticas solo generan cadenas largas
 
 ---
 
-## 📚 Referencias
+## Referencias
 
 - **Teoría de Autómatas** - Hopcroft, Motwani, Ullman
 - **Algoritmo CYK:** [Wikipedia](https://en.wikipedia.org/wiki/CYK_algorithm)
 - **Forma Normal de Chomsky:** [Wikipedia](https://en.wikipedia.org/wiki/Chomsky_normal_form)
+- **ttkbootstrap:** [Documentación oficial](https://ttkbootstrap.readthedocs.io/)
 
 ---
 
 ## 👥 Autores
 
 **UPTC - Ingeniería de Sistemas**  
+**Mileth Martinez, Steven León y Natalia Bernal**  
 Proyecto de Lenguajes Formales
 
 ---
