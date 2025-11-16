@@ -1,4 +1,4 @@
-# 📚 Analizador Sintáctico de Gramáticas Formales
+# Analizador Sintáctico de Gramáticas Formales
 
 **Universidad Pedagógica y Tecnológica de Colombia - UPTC**  
 **Asignatura:** Lenguajes Formales  
