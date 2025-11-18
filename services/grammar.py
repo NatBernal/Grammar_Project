@@ -15,7 +15,8 @@ class Grammar:
             gtype: "type2" (GLC) o "type3" (Regular)
         """
         self.N = list(N)
-        self.T = list(T)
+        # Filtrar terminales que coincidan con no terminales
+        self.T = [t for t in T if t not in self.N]
         self.P = list(P)
         self.S = S
         self.type = gtype
@@ -61,6 +62,10 @@ class Grammar:
         - Lado derecho solo contiene símbolos de N o T
         """
         if self.S not in self.N:
+            return False
+
+        # N y T deben ser disjuntos (por si acaso)
+        if set(self.N) & set(self.T):
             return False
         
         for p in self.P:

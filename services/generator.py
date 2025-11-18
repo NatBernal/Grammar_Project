@@ -22,6 +22,10 @@ def generate_shortest(grammar: Grammar, limit: int = 10, max_depth: int = 12):
     while q and len(results) < limit:
         sent = q.popleft()
         
+        # ¿Toda terminal? -> consideramos terminal todo símbolo que NO sea un no terminal (más robusto)
+        # También tratamos la sentencial vacía como epsilon (cadena terminal)
+        if len(sent) == 0 or all(sym not in grammar.N for sym in sent):
+            s = "".join(sent)
         # Filtrar símbolos epsilon
         sent_filtered = [sym for sym in sent if sym not in ['ε', 'epsilon']]
         
