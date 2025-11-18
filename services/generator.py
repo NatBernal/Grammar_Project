@@ -22,15 +22,18 @@ def generate_shortest(grammar: Grammar, limit: int = 10, max_depth: int = 12):
     while q and len(results) < limit:
         sent = q.popleft()
         
-        # ¿Toda terminal?
-        if all(sym in grammar.T for sym in sent):
-            s = "".join(sent)
+        # Filtrar símbolos epsilon
+        sent_filtered = [sym for sym in sent if sym not in ['ε', 'epsilon']]
+        
+        # ¿Toda terminal (o vacía después de filtrar epsilon)?
+        if all(sym in grammar.T for sym in sent_filtered):
+            s = "".join(sent_filtered)
             if s not in results:
                 results.append(s)
             continue  # No expandir cadenas terminales
 
         # Evitar sentencias demasiado largas
-        if len(sent) > max_depth:
+        if len(sent_filtered) > max_depth:
             continue
 
         # Expandir el PRIMER no terminal (derivación leftmost)

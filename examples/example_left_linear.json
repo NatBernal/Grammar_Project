@@ -1,0 +1,21 @@
+{
+  "type": "type3",
+  "N": ["S", "A", "B"],
+  "T": ["a", "b", "c"],
+  "P": [
+    {
+      "left": "S",
+      "right": ["A", "c"]
+    },
+    {
+      "left": "A",
+      "right": ["B", "b"]
+    },
+    {
+      "left": "B",
+      "right": ["a"]
+    }
+  ],
+  "S": "S",
+  "description": "Gramática Regular Lineal Izquierda - Genera el lenguaje: abc"
+}
